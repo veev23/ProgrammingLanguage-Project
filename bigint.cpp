@@ -1,14 +1,14 @@
 #include "bigint.h"
-#include <algorithm>
+#include <iostream>
 using namespace std;
 #define JINSU 10
 //앞이 크면 1, 같으면 0, 뒤가 크면 -1
-int cmp(const bigint a, const bigint b){
+int cmp(const bigint& a, const bigint& b){
 	if (a.get_len() != b.get_len()) {
 		if (a.get_len() > b.get_len()) return 1;
 		else return -1;
 	}
-	for (int i = 0; i < a.get_len(); i++) {
+	for (int i = a.get_len() - 1; i>=0; i--) {
 		if (a.at(i) > b.at(i)) return 1;
 		else if (a.at(i) < b.at(i)) return -1;
 	}
@@ -23,7 +23,7 @@ bigint::~bigint() {
 bigint::bigint() {
 	this->len = 1;
 	this->sign = 0;
-	this->digit = new int;
+	this->digit = new int[1];
 	digit[0] = 0;
 }
 bigint::bigint(int* arr, int sz) {
@@ -59,7 +59,15 @@ bigint::bigint(long long num) {
 
 void bigint::print(){
 	for (int i = this->get_len()-1; i >= 0; i--) {
-		cout << this->at(i);
+		std::cout << this->at(i);
+	}
+}
+bigint::bigint(const bigint& tmp) {
+	this->len = tmp.get_len();
+	this->sign = tmp.get_sign();
+	this->digit = new int[tmp.get_len()];
+	for (int i = 0; i < tmp.get_len(); i++) {
+		this->digit[i] = tmp.at(i);
 	}
 }
 bigint& bigint::operator=(const bigint& tmp) {
@@ -109,13 +117,13 @@ bigint add(bigint a, bigint b) {
 	else {
 		result_len = a_len;
 	}
-	delete[] tmp;
 	bigint result(tmp, result_len);
+	delete[] tmp;
 	return result;
 };
 bigint sub(bigint a, bigint b) {
 	if (b.get_sign() == 0) {
-		return 0; //빼는 수가 0일 경우
+		return a; //빼는 수가 0일 경우
 	}
 	if (cmp(a, b) == 0) {
 		return 0; //두 수가 같은 경우
@@ -151,8 +159,8 @@ bigint sub(bigint a, bigint b) {
 	for (result_len = a_len - 1; result_len >= 0; result_len--) {
 		if (tmp[result_len]) break;
 	}
-	delete[] tmp;
 	bigint result(tmp, result_len+1);
+	delete[] tmp;
 	return result;
 };
 bigint mul(bigint a, bigint b) {
@@ -188,8 +196,8 @@ bigint mul(bigint a, bigint b) {
 	for (result_len = len - 1; result_len >= 0; result_len--) {
 		if (tmp[result_len]) break;
 	}
-	delete[] tmp;
 	bigint result(tmp, result_len + 1);
+	delete[] tmp;
 	return result;
 }
 bigint div(bigint a, bigint b, bigint& remain) {
@@ -200,40 +208,49 @@ bigint div(bigint a, bigint b, bigint& remain) {
 		return 0;
 	}
 	b.left_shift(diff);
-	int* q_arr = new int[diff];
-	for(int i =1; i<=diff; i++){
-		bigint tmp = b;
-		for (int j = 0; j < JINSU; j++) {
-			if (cmp(a, tmp) == -1) {
+	int* q_arr = new int[diff+1];
+	
+	bigint tmp = b;
+	for(int i =0; i<=diff; i++){
+		q_arr[diff - i] = 0;
+		for (int j = 1; j <= JINSU; j++) {
+			if (cmp(a, tmp) != -1) {
+				a = a - tmp;
 				q_arr[diff - i] = j;
-				break;
 			}
 			else {
-				a = a - tmp;
+				break;
 			}
 		}
+		tmp.right_shift(1);
 	}
-	bigint q(q_arr, diff);
+	//쓰지 않는 자리 정리
+	int result_len;
+	for (result_len = diff; result_len >= 0; result_len--) {
+		if (q_arr[result_len]) break;
+	}
+	bigint result(q_arr, result_len+1);
+	remain = a;
 	delete[] q_arr;
-	return q;
+	return result;
 }
-bigint operator+(const bigint a, const bigint b) {
+bigint operator+(const bigint& a, const bigint& b) {
 	if (a.get_len() < b.get_len()) {
 		return add(b, a);
 	}
 	return add(a, b);
 };
-bigint operator-(const bigint a, const bigint b) {
+bigint operator-(const bigint& a, const bigint& b) {
 	return sub(a, b);
 };
-bigint operator*(const bigint a, const bigint b) {
+bigint operator*(const bigint& a, const bigint& b) {
 	return mul(a,b);
 };
-bigint operator/(const bigint a, const bigint b) {
+bigint operator/(const bigint& a, const bigint& b) {
 	bigint dummy;
 	return div(a, b, dummy);
 };
-bigint operator%(const bigint a, const bigint b) {
+bigint operator%(const bigint& a, const bigint& b) {
 	bigint remain;
 	div(a, b, remain);
 	return remain;
@@ -242,11 +259,25 @@ void bigint::left_shift(int n) {
 	int len = this->get_len() + n;
 	int* tmp = new int[len];
 	int i;
-	for (i = 0; i < this->get_len(); i++) {
-		tmp[i] = this->at(i);
+	for (i = n; i < len; i++) {
+		tmp[i] = this->at(i-n);
 	}
-	for (; i < len; i++) {
+	for (i = 0; i < n; i++) {
 		tmp[i] = 0;
+	}
+	bigint b(tmp, len);
+	*this = b;
+	delete[] tmp;
+}
+void bigint::right_shift(int n) {
+	int len = this->get_len() - n;
+	if (len < 1) {
+		*this = 0;
+		return;
+	}
+	int* tmp = new int[len];
+	for (int i = 0; i < len; i++) {
+		tmp[i] = this->at(i + n);
 	}
 	bigint b(tmp, len);
 	*this = b;
