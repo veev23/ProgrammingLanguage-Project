@@ -34,7 +34,7 @@ bigint::bigint(int* arr, int sz) {
 		digit[i] = arr[i];
 	}
 }
-bigint::bigint(long long num) {
+bigint::bigint(int num) {
 	int arr[20], iter=0;
 	while (num > 0) {
 		arr[iter++] = num % 10;
@@ -73,6 +73,7 @@ bigint::bigint(const bigint& tmp) {
 bigint& bigint::operator=(const bigint& tmp) {
 	this->len = tmp.get_len();
 	this->sign = tmp.get_sign();
+	delete[] this->digit;
 	this->digit = new int[tmp.get_len()];
 	for (int i = 0; i < tmp.get_len(); i++) {
 		this->digit[i] = tmp.at(i);
@@ -80,7 +81,7 @@ bigint& bigint::operator=(const bigint& tmp) {
 	return *this;
 };
 
-bigint add(bigint a, bigint b) {
+bigint add(const bigint& a, const bigint& b) {
 	if (b.get_sign() == 0) return a;
 	if (a.get_sign() == 0) return b;
 	int a_len = a.get_len();
@@ -121,7 +122,7 @@ bigint add(bigint a, bigint b) {
 	delete[] tmp;
 	return result;
 };
-bigint sub(bigint a, bigint b) {
+bigint sub(const bigint& a, const bigint& b) {
 	if (b.get_sign() == 0) {
 		return a; //빼는 수가 0일 경우
 	}
@@ -163,7 +164,7 @@ bigint sub(bigint a, bigint b) {
 	delete[] tmp;
 	return result;
 };
-bigint mul(bigint a, bigint b) {
+bigint mul(const bigint& a, const bigint& b) {
 	if (a.get_sign() == 0 || b.get_sign() == 0) {
 		return 0;
 	}
