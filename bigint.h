@@ -1,7 +1,9 @@
 #pragma once
 #ifndef BIGINT_H
 #define BIGINT_H
-class bigint{
+#include <iostream>
+using namespace std;
+class bigint {
 private:
 	//음수 : -1, 0 : 0, 양수 : 1
 	int sign;
@@ -32,12 +34,12 @@ public:
 	bigint(int* arr, int size);
 	//int를 bigint로 변환해서 저장
 	bigint(int);
-	void print();
 	bigint& operator=(const bigint&);
 	friend bigint operator+(const bigint&, const bigint&);
 	friend bigint operator-(const bigint&, const bigint&);
 	friend bigint operator*(const bigint&, const bigint&);
 	friend bigint operator/(const bigint&, const bigint&);
 	friend bigint operator%(const bigint&, const bigint&);
+	friend ostream& operator<<(ostream&, const bigint&);
 };
 #endif

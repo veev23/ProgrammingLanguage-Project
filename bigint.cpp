@@ -1,14 +1,12 @@
 #include "bigint.h"
-#include <iostream>
-using namespace std;
 #define JINSU 10
 //앞이 크면 1, 같으면 0, 뒤가 크면 -1
-int cmp(const bigint& a, const bigint& b){
+int cmp(const bigint& a, const bigint& b) {
 	if (a.get_len() != b.get_len()) {
 		if (a.get_len() > b.get_len()) return 1;
 		else return -1;
 	}
-	for (int i = a.get_len() - 1; i>=0; i--) {
+	for (int i = a.get_len() - 1; i >= 0; i--) {
 		if (a.at(i) > b.at(i)) return 1;
 		else if (a.at(i) < b.at(i)) return -1;
 	}
@@ -35,7 +33,7 @@ bigint::bigint(int* arr, int sz) {
 	}
 }
 bigint::bigint(int num) {
-	int arr[20], iter=0;
+	int arr[20], iter = 0;
 	while (num > 0) {
 		arr[iter++] = num % 10;
 		num /= 10;
@@ -56,12 +54,6 @@ bigint::bigint(int num) {
 		digit[i] = arr[i];
 	}
 };
-
-void bigint::print(){
-	for (int i = this->get_len()-1; i >= 0; i--) {
-		std::cout << this->at(i);
-	}
-}
 bigint::bigint(const bigint& tmp) {
 	this->len = tmp.get_len();
 	this->sign = tmp.get_sign();
@@ -71,6 +63,9 @@ bigint::bigint(const bigint& tmp) {
 	}
 }
 bigint& bigint::operator=(const bigint& tmp) {
+	if (this == &tmp) {
+		return *this;
+	}
 	this->len = tmp.get_len();
 	this->sign = tmp.get_sign();
 	delete[] this->digit;
@@ -160,7 +155,7 @@ bigint sub(const bigint& a, const bigint& b) {
 	for (result_len = a_len - 1; result_len >= 0; result_len--) {
 		if (tmp[result_len]) break;
 	}
-	bigint result(tmp, result_len+1);
+	bigint result(tmp, result_len + 1);
 	delete[] tmp;
 	return result;
 };
@@ -209,10 +204,10 @@ bigint div(bigint a, bigint b, bigint& remain) {
 		return 0;
 	}
 	b.left_shift(diff);
-	int* q_arr = new int[diff+1];
-	
+	int* q_arr = new int[diff + 1];
+
 	bigint tmp = b;
-	for(int i =0; i<=diff; i++){
+	for (int i = 0; i <= diff; i++) {
 		q_arr[diff - i] = 0;
 		for (int j = 1; j <= JINSU; j++) {
 			if (cmp(a, tmp) != -1) {
@@ -230,7 +225,7 @@ bigint div(bigint a, bigint b, bigint& remain) {
 	for (result_len = diff; result_len >= 0; result_len--) {
 		if (q_arr[result_len]) break;
 	}
-	bigint result(q_arr, result_len+1);
+	bigint result(q_arr, result_len + 1);
 	remain = a;
 	delete[] q_arr;
 	return result;
@@ -245,7 +240,7 @@ bigint operator-(const bigint& a, const bigint& b) {
 	return sub(a, b);
 };
 bigint operator*(const bigint& a, const bigint& b) {
-	return mul(a,b);
+	return mul(a, b);
 };
 bigint operator/(const bigint& a, const bigint& b) {
 	bigint dummy;
@@ -261,7 +256,7 @@ void bigint::left_shift(int n) {
 	int* tmp = new int[len];
 	int i;
 	for (i = n; i < len; i++) {
-		tmp[i] = this->at(i-n);
+		tmp[i] = this->at(i - n);
 	}
 	for (i = 0; i < n; i++) {
 		tmp[i] = 0;
@@ -290,9 +285,15 @@ int bigint::at(int idx) {
 int bigint::at(int idx) const {
 	return this->digit[idx];
 }
-int bigint::get_sign() const{
+int bigint::get_sign() const {
 	return this->sign;
 }
 int bigint::get_len() const {
 	return this->len;
+}
+ostream& operator<<(ostream& os, const bigint& num) {
+	for (int i = num.get_len() - 1; i >= 0; i--) {
+		cout << num.at(i);
+	}
+	return os;
 }
