@@ -3,12 +3,11 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 void BigIntegerTest() {
-	int a, b, c, d;
+	bigint a, b, c, d;
 	bigint A;
 	while (cin >> a >> b) {
-		A = bigint(a) + bigint(b);
-		cout << A;
-		cout << '\n';
+		A = a / b;
+		cout << A << '\n';
 	}
 }
 int main() {

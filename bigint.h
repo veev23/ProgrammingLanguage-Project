@@ -25,7 +25,9 @@ private:
 	int at(int);
 	int at(int) const;
 	int get_sign() const;
-	int get_len() const;
+	int get_len() const; 
+	void set_number(long long);
+	void set_number(int);
 public:
 	~bigint();
 	bigint();
@@ -40,6 +42,7 @@ public:
 	friend bigint operator*(const bigint&, const bigint&);
 	friend bigint operator/(const bigint&, const bigint&);
 	friend bigint operator%(const bigint&, const bigint&);
-	friend ostream& operator<<(ostream&, const bigint&);
+	friend ostream& operator<<(ostream&, const bigint&); 
+	friend istream& operator>>(istream&, bigint&);
 };
 #endif

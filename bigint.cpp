@@ -12,6 +12,31 @@ int cmp(const bigint& a, const bigint& b) {
 	}
 	return 0;
 }
+void bigint::set_number(long long num) {
+	int arr[20], iter = 0;
+	while (num > 0) {
+		arr[iter++] = num % 10;
+		num /= 10;
+	}
+	//0인 경우
+	if (iter == 0) {
+		iter = 1;
+		arr[0] = 0;
+		this->len = 1;
+		this->sign = 0;
+	}
+	else {
+		this->len = iter;
+		this->sign = 1;
+	}
+	this->digit = new int[iter];
+	for (int i = 0; i < iter; i++) {
+		digit[i] = arr[i];
+	}
+}
+void bigint::set_number(int num) {
+	set_number((long long)num);
+}
 bigint::~bigint() {
 	delete[] digit;
 }
@@ -33,26 +58,7 @@ bigint::bigint(int* arr, int sz) {
 	}
 }
 bigint::bigint(int num) {
-	int arr[20], iter = 0;
-	while (num > 0) {
-		arr[iter++] = num % 10;
-		num /= 10;
-	}
-	//0인 경우
-	if (iter == 0) {
-		iter = 1;
-		arr[0] = 0;
-		this->len = 1;
-		this->sign = 0;
-	}
-	else {
-		this->len = iter;
-		this->sign = 1;
-	}
-	this->digit = new int[iter];
-	for (int i = 0; i < iter; i++) {
-		digit[i] = arr[i];
-	}
+	this->set_number(num);
 };
 bigint::bigint(const bigint& tmp) {
 	this->len = tmp.get_len();
@@ -61,6 +67,7 @@ bigint::bigint(const bigint& tmp) {
 	for (int i = 0; i < tmp.get_len(); i++) {
 		this->digit[i] = tmp.at(i);
 	}
+	cout << "복사 : "<<*this << '\n';
 }
 bigint& bigint::operator=(const bigint& tmp) {
 	if (this == &tmp) {
@@ -198,8 +205,8 @@ bigint mul(const bigint& a, const bigint& b) {
 }
 bigint div(bigint a, bigint b, bigint& remain) {
 	int diff = a.get_len() - b.get_len();
-	//a>b거나 0인 경우 0 반환 
-	if (diff < 0 || b.get_sign() == 0) {
+	//a<b거나 0인 경우 0 반환 
+	if (cmp(a,b) < 0|| b.get_sign() == 0) {
 		remain = a;
 		return 0;
 	}
@@ -295,5 +302,11 @@ ostream& operator<<(ostream& os, const bigint& num) {
 	for (int i = num.get_len() - 1; i >= 0; i--) {
 		cout << num.at(i);
 	}
+	return os;
+}
+istream& operator>>(istream& os, bigint& num) {
+	long long input;
+	cin >> input;
+	num.set_number(input);
 	return os;
 }
