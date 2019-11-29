@@ -1,4 +1,5 @@
 #include "bigint.h"
+#include "BigIntNerualNet.h"
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
@@ -11,12 +12,12 @@ void BigIntegerTest() {
 	}
 }
 int main() {
-	BigIntegerTest();
-	/*BigIntNerualNet nn;
+	//BigIntegerTest();
+	BigIntNerualNet nn;
 	nn.InitNN();
 	nn.FeedForward();
 	nn.ShowResult();
-	*/
+	
 	_CrtDumpMemoryLeaks();
 	return 0;
 }
