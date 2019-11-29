@@ -35,7 +35,7 @@ BigIntNerualNet::~BigIntNerualNet() {
 	delete[] weight;
 }
 void BigIntNerualNet::InitNNTest() {
-	cout << "---InitNNTest---\n";
+	cout << "\n---InitNNTest---\n";
 	cout << "input layer " << " (" << node_num[0] << "): ";
 	for (int node = 0; node < node_num[0]; node++) {
 		cout << layers[0][node] << ' ';
@@ -53,6 +53,15 @@ void BigIntNerualNet::InitNNTest() {
 	}
 }
 void BigIntNerualNet::FeedForwardTest() {
+	cout << "\n---FeedForwardTest---\n";
+	for (int layer = 1; layer < layer_cnt - 1; layer++) {
+		cout << "layer " << layer << " : ";
+		for (int node = 0; node < node_num[layer]; node++) {
+			cout << layers[layer][node] << ' ';
+		}
+		cout << endl;
+	}
+	cout << endl;
 }
 void BigIntNerualNet::InitNN() {
 	cout << "\n---initNN---\n";
@@ -73,6 +82,21 @@ void BigIntNerualNet::InitNN() {
 	InitNNTest();
 };
 void BigIntNerualNet::FeedForward() {
+	for (int layer = 1; layer < layer_cnt; layer++) {
+		for (int node = 0; node < node_num[layer]; node++) {
+			for (int i = 0; i < node_num[layer - 1]; i++) {
+				layers[layer][node] += layers[layer - 1][i] * weight[layer - 1][i][node];
+			}
+		}
+	}
+	FeedForwardTest();
 };
 void BigIntNerualNet::ShowResult() {
+	cout << "\n---FeedForwardTest---\n";
+	int layer = layer_cnt - 1;
+	cout << "output layer : ";
+	for (int node = 0; node < node_num[layer]; node++) {
+		cout << layers[layer][node] << ' ';
+	}
+	cout << endl;
 };

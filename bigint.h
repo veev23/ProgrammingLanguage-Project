@@ -37,7 +37,8 @@ public:
 	//int를 bigint로 변환해서 저장
 	bigint(int);
 	bigint& operator=(const bigint&);
-	friend bigint operator+(const bigint&, const bigint&);
+	friend bigint operator+(const bigint&, const bigint&); 
+	bigint& operator+=(const bigint&);
 	friend bigint operator-(const bigint&, const bigint&);
 	friend bigint operator*(const bigint&, const bigint&);
 	friend bigint operator/(const bigint&, const bigint&);

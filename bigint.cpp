@@ -67,7 +67,6 @@ bigint::bigint(const bigint& tmp) {
 	for (int i = 0; i < tmp.get_len(); i++) {
 		this->digit[i] = tmp.at(i);
 	}
-	cout << "บนป็ : "<<*this << '\n';
 }
 bigint& bigint::operator=(const bigint& tmp) {
 	if (this == &tmp) {
@@ -243,6 +242,10 @@ bigint operator+(const bigint& a, const bigint& b) {
 	}
 	return add(a, b);
 };
+bigint& bigint::operator+=(const bigint& op) {
+	*this = *this + op;
+	return *this;
+}
 bigint operator-(const bigint& a, const bigint& b) {
 	return sub(a, b);
 };
