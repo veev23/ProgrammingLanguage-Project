@@ -43,7 +43,7 @@ public:
 	friend bigint operator%(const bigint&, const bigint&);
 	friend ostream& operator<<(ostream&, const bigint&); 
 	friend istream& operator>>(istream&, bigint&);
-	void BigIntegerTest1(int op1, int op2);
-	void BigIntegerTest2(string path);
+	static void BigIntegerTest1(int op1, int op2);
+	static void BigIntegerTest2(string path);
 };
 #endif

@@ -15,23 +15,20 @@ int cmp(const bigint& a, const bigint& b) {
 void bigint::set_number(int num) {
 	int arr[20], iter = 0;
 	while (num > 0) {
-		arr[iter++] = num % 10;
-		num /= 10;
+		arr[iter++] = num % JINSU;
+		num /= JINSU;
 	}
 	//0ÀÎ °æ¿ì
 	if (iter == 0) {
-		iter = 1;
-		arr[0] = 0;
-		this->len = 1;
-		this->sign = 0;
+		*this = bigint();
 	}
 	else {
 		this->len = iter;
 		this->sign = 1;
-	}
-	this->digit = new int[iter];
-	for (int i = 0; i < iter; i++) {
-		digit[i] = arr[i];
+		this->digit = new int[iter];
+		for (int i = 0; i < iter; i++) {
+			digit[i] = arr[i];
+		}
 	}
 }
 bigint::~bigint() {
