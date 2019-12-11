@@ -2,6 +2,7 @@
 #ifndef BIGINT_H
 #define BIGINT_H
 #include <iostream>
+#include <fstream>
 using namespace std;
 class bigint {
 private:
@@ -22,11 +23,8 @@ private:
 	void right_shift(int);
 
 	friend int cmp(const bigint&, const bigint&);
-	int at(int);
-	int at(int) const;
 	int get_sign() const;
 	int get_len() const; 
-	void set_number(long long);
 	void set_number(int);
 public:
 	~bigint();
@@ -45,5 +43,7 @@ public:
 	friend bigint operator%(const bigint&, const bigint&);
 	friend ostream& operator<<(ostream&, const bigint&); 
 	friend istream& operator>>(istream&, bigint&);
+	void BigIntegerTest1(int op1, int op2);
+	void BigIntegerTest2(string path);
 };
 #endif

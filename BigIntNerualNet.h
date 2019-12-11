@@ -3,6 +3,8 @@
 #define BIGINTNERUALNET_H
 #include "bigint.h"
 class BigIntNerualNet {
+	bool test;
+	string path;
 	int layer_cnt;
 	//node_num[i] : 레이어 별 노드 수
 	int* node_num;
@@ -18,5 +20,7 @@ public:
 	void InitNN();
 	void FeedForward();
 	void ShowResult();
+	void TestFFAlgorithm(string path);
+	void TestFFAlgorithm();
 };
 #endif

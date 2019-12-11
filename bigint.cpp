@@ -7,12 +7,12 @@ int cmp(const bigint& a, const bigint& b) {
 		else return -1;
 	}
 	for (int i = a.get_len() - 1; i >= 0; i--) {
-		if (a.at(i) > b.at(i)) return 1;
-		else if (a.at(i) < b.at(i)) return -1;
+		if (a.digit[i] > b.digit[i]) return 1;
+		else if (a.digit[i] < b.digit[i]) return -1;
 	}
 	return 0;
 }
-void bigint::set_number(long long num) {
+void bigint::set_number(int num) {
 	int arr[20], iter = 0;
 	while (num > 0) {
 		arr[iter++] = num % 10;
@@ -33,9 +33,6 @@ void bigint::set_number(long long num) {
 	for (int i = 0; i < iter; i++) {
 		digit[i] = arr[i];
 	}
-}
-void bigint::set_number(int num) {
-	set_number((long long)num);
 }
 bigint::~bigint() {
 	delete[] digit;
@@ -65,7 +62,7 @@ bigint::bigint(const bigint& tmp) {
 	this->sign = tmp.get_sign();
 	this->digit = new int[tmp.get_len()];
 	for (int i = 0; i < tmp.get_len(); i++) {
-		this->digit[i] = tmp.at(i);
+		this->digit[i] = tmp.digit[i];
 	}
 }
 bigint& bigint::operator=(const bigint& tmp) {
@@ -77,7 +74,7 @@ bigint& bigint::operator=(const bigint& tmp) {
 	delete[] this->digit;
 	this->digit = new int[tmp.get_len()];
 	for (int i = 0; i < tmp.get_len(); i++) {
-		this->digit[i] = tmp.at(i);
+		this->digit[i] = tmp.digit[i];
 	}
 	return *this;
 };
@@ -91,7 +88,7 @@ bigint add(const bigint& a, const bigint& b) {
 	int carry = 0;
 	//작은 길이만큼 덧셈
 	for (int i = 0; i < b_len; i++) {
-		tmp[i] = a.at(i) + b.at(i) + carry;
+		tmp[i] = a.digit[i] + b.digit[i] + carry;
 		if (tmp[i] < JINSU) {
 			carry = 0;
 		}
@@ -102,7 +99,7 @@ bigint add(const bigint& a, const bigint& b) {
 	}
 	//나머지 길이만큼 대입+캐리
 	for (int i = b_len; i < a_len; i++) {
-		tmp[i] = a.at(i) + carry;
+		tmp[i] = a.digit[i] + carry;
 		if (tmp[i] < JINSU) {
 			carry = 0;
 		}
@@ -136,7 +133,7 @@ bigint sub(const bigint& a, const bigint& b) {
 	int carry = 0;
 	//작은 길이만큼 뺄셈
 	for (int i = 0; i < b_len; i++) {
-		tmp[i] = a.at(i) - b.at(i) - carry;
+		tmp[i] = a.digit[i] - b.digit[i] - carry;
 		if (tmp[i] >= 0) {
 			carry = 0;
 		}
@@ -147,7 +144,7 @@ bigint sub(const bigint& a, const bigint& b) {
 	}
 	//나머지 길이만큼 대입+캐리
 	for (int i = b_len; i < a_len; i++) {
-		tmp[i] = a.at(i) - carry;
+		tmp[i] = a.digit[i] - carry;
 		if (tmp[i] >= 0) {
 			carry = 0;
 		}
@@ -178,7 +175,7 @@ bigint mul(const bigint& a, const bigint& b) {
 	//자리수 별로 곱셈
 	for (int ai = 0; ai < a_len; ai++) {
 		for (int bi = 0; bi < b_len; bi++) {
-			tmp[ai + bi] += a.at(ai) * b.at(bi);
+			tmp[ai + bi] += a.digit[ai] * b.digit[bi];
 		}
 	}
 
@@ -266,7 +263,7 @@ void bigint::left_shift(int n) {
 	int* tmp = new int[len];
 	int i;
 	for (i = n; i < len; i++) {
-		tmp[i] = this->at(i - n);
+		tmp[i] = this->digit[i - n];
 	}
 	for (i = 0; i < n; i++) {
 		tmp[i] = 0;
@@ -283,17 +280,11 @@ void bigint::right_shift(int n) {
 	}
 	int* tmp = new int[len];
 	for (int i = 0; i < len; i++) {
-		tmp[i] = this->at(i + n);
+		tmp[i] = this->digit[i + n];
 	}
 	bigint b(tmp, len);
 	*this = b;
 	delete[] tmp;
-}
-int bigint::at(int idx) {
-	return this->digit[idx];
-}
-int bigint::at(int idx) const {
-	return this->digit[idx];
 }
 int bigint::get_sign() const {
 	return this->sign;
@@ -303,13 +294,33 @@ int bigint::get_len() const {
 }
 ostream& operator<<(ostream& os, const bigint& num) {
 	for (int i = num.get_len() - 1; i >= 0; i--) {
-		cout << num.at(i);
+		os << num.digit[i];
 	}
 	return os;
 }
 istream& operator>>(istream& os, bigint& num) {
-	long long input;
-	cin >> input;
+	int input;
+	os >> input;
 	num.set_number(input);
 	return os;
+}
+void bigint::BigIntegerTest1(int op1, int op2) {
+	bigint a(op1), b(op2);
+	cout << "BIGINT TEST 1\n";
+	cout << a << '+' << b << '=' << a + b << '\n';
+	cout << a << '*' << b << '=' << a * b << '\n';
+	cout << a << '/' << b << '=' << a / b << '\n';
+	cout << a << '%' << b << '=' << a % b << '\n';
+}
+void bigint::BigIntegerTest2(string path) {
+	bigint result;
+	bigint input[10000];
+	int idx = 0;
+	ifstream input_stream(path);
+	while (input_stream >> input[idx++]);
+	for (int i = 0; i < idx/2; i++) {
+		result += input[i] * input[i + idx / 2];
+	}
+	cout << "BIGINT TEST 2\n";
+	cout << result << '\n';
 }

@@ -1,23 +1,11 @@
 #include "BigIntNerualNet.h"
-
+#pragma warning(disable : 4996)
+#define LAYER_RANGE 30
+#define LAYERNODES_RANGE 30
+#define WEIGHT_RANGE 10000
+#define INPUTNODE_RANGE 2100000000
 BigIntNerualNet::BigIntNerualNet() {
-	cout << "레이어 수를 입력하세요.\n";
-	cin >> layer_cnt;
-	layers = new bigint*[layer_cnt];
-	node_num = new int[layer_cnt];
-	weight = new bigint**[layer_cnt - 1];
-	cout << "각 레이어별 노드 수를 입력하세요.\n";
-	for (int i = 0; i < layer_cnt; i++) {
-		cin >> node_num[i];
-		layers[i] = new bigint[node_num[i]];
-	}
-
-	for (int layer = 0; layer < layer_cnt - 1; layer++) {
-		weight[layer] = new bigint*[node_num[layer]];
-		for (int i = 0; i < node_num[layer]; i++) {
-			weight[layer][i] = new bigint[node_num[layer + 1]];
-		}
-	}
+	test = false;
 };
 BigIntNerualNet::~BigIntNerualNet() {
 	for (int i = 0; i < layer_cnt; i++) {
@@ -34,9 +22,21 @@ BigIntNerualNet::~BigIntNerualNet() {
 	}
 	delete[] weight;
 }
+
+void BigIntNerualNet::TestFFAlgorithm(string path) {
+	this->test = true;
+	freopen(path.c_str(), "r", stdin);
+}
+void BigIntNerualNet::TestFFAlgorithm() {
+	this->test = false;
+}
 void BigIntNerualNet::InitNNTest() {
 	cout << "\n---InitNNTest---\n";
-	cout << "input layer " << " (" << node_num[0] << "): ";
+	cout << "layer별 노드 수 : ";
+	for (int i = 0; i < layer_cnt; i++) {
+		cout << node_num[i] << ' ';
+	}
+	cout << "\ninput layer : ";
 	for (int node = 0; node < node_num[0]; node++) {
 		cout << layers[0][node] << ' ';
 	}
@@ -64,21 +64,68 @@ void BigIntNerualNet::FeedForwardTest() {
 	cout << endl;
 }
 void BigIntNerualNet::InitNN() {
-	cout << "\n---initNN---\n";
-	cout << "input layer : ";
-	for (int i = 0; i < node_num[0]; i++) {
-		cin >> this->layers[0][i];
-	}
-	cout << "input weight\n";
-	for (int layer = 0; layer < layer_cnt - 1; layer++) {
-		cout << "layer " << layer + 1 << "-" << layer + 2 << " : ";
-		for (int i = 0; i < node_num[layer]; i++) {
-			for (int j = 0; j < node_num[layer + 1]; j++) {
-				cin >> weight[layer][i][j];
+	if (test) {
+		//레이어 수
+		cin >> layer_cnt;
+		layers = new bigint*[layer_cnt];
+		node_num = new int[layer_cnt];
+		weight = new bigint**[layer_cnt - 1];
+		//레이어 별 노드 수
+		for (int i = 0; i < layer_cnt; i++) {
+			cin >> node_num[i];
+			layers[i] = new bigint[node_num[i]];
+		}
+
+		for (int layer = 0; layer < layer_cnt - 1; layer++) {
+			weight[layer] = new bigint*[node_num[layer]];
+			for (int i = 0; i < node_num[layer]; i++) {
+				weight[layer][i] = new bigint[node_num[layer + 1]];
 			}
 		}
+		//레이어별 weight
+		for (int layer = 0; layer < layer_cnt - 1; layer++) {
+			int fixed_weight;
+			cin >> fixed_weight;
+			for (int i = 0; i < node_num[layer]; i++) {
+				for (int j = 0; j < node_num[layer + 1]; j++) {
+					weight[layer][i][j] = fixed_weight;
+				}
+			}
+		}
+		//input 레이어의 노드 입력
+		for (int i = 0; i < node_num[0]; i++) {
+			cin >> this->layers[0][i];
+		}
 	}
+	else {
+		layer_cnt = rand() % LAYER_RANGE + 2;
+		layers = new bigint*[layer_cnt];
+		node_num = new int[layer_cnt];
+		weight = new bigint**[layer_cnt - 1];
+		for (int i = 0; i < layer_cnt; i++) {
+			node_num[i] = rand() % LAYERNODES_RANGE + 1;
+			layers[i] = new bigint[node_num[i]];
+		}
 
+		for (int layer = 0; layer < layer_cnt - 1; layer++) {
+			weight[layer] = new bigint*[node_num[layer]];
+			for (int i = 0; i < node_num[layer]; i++) {
+				weight[layer][i] = new bigint[node_num[layer + 1]];
+			}
+		}
+		//레이어별 weight
+		for (int layer = 0; layer < layer_cnt - 1; layer++) {
+			for (int i = 0; i < node_num[layer]; i++) {
+				for (int j = 0; j < node_num[layer + 1]; j++) {
+					weight[layer][i][j] = rand() % WEIGHT_RANGE;
+				}
+			}
+		}
+		//한 레이어의 노드들 입력
+		for (int i = 0; i < node_num[0]; i++) {
+			this->layers[0][i] = rand() % INPUTNODE_RANGE + 1;
+		}
+	}
 	InitNNTest();
 };
 void BigIntNerualNet::FeedForward() {
@@ -96,7 +143,7 @@ void BigIntNerualNet::ShowResult() {
 	int layer = layer_cnt - 1;
 	cout << "output layer : ";
 	for (int node = 0; node < node_num[layer]; node++) {
-		cout << layers[layer][node] << ' ';
+		cout << layers[layer][node] << '\n';
 	}
 	cout << endl;
 };
