@@ -5,14 +5,12 @@
 #define WEIGHT_RANGE 10000
 #define INPUTNODE_RANGE 2100000000
 BigIntNerualNet::BigIntNerualNet() {
-	test = false;
 };
 BigIntNerualNet::~BigIntNerualNet() {
 	for (int i = 0; i < layer_cnt; i++) {
 		delete[] layers[i];
 	}
 	delete[] layers;
-	delete[] node_num;
 
 	for (int layer = 0; layer < layer_cnt - 1; layer++) {
 		for (int i = 0; i < node_num[layer]; i++) {
@@ -21,14 +19,11 @@ BigIntNerualNet::~BigIntNerualNet() {
 		delete[] weight[layer];
 	}
 	delete[] weight;
+	delete[] node_num;
 }
 
 void BigIntNerualNet::TestFFAlgorithm(string path) {
-	this->test = true;
-	freopen(path.c_str(), "r", stdin);
-}
-void BigIntNerualNet::TestFFAlgorithm() {
-	this->test = false;
+	this->file_input.open(path);
 }
 void BigIntNerualNet::InitNNTest() {
 	cout << "\n---InitNNTest---\n";
@@ -64,15 +59,15 @@ void BigIntNerualNet::FeedForwardTest() {
 	cout << endl;
 }
 void BigIntNerualNet::InitNN() {
-	if (test) {
+	if (file_input.is_open()) {
 		//레이어 수
-		cin >> layer_cnt;
+		file_input >> layer_cnt;
 		layers = new bigint*[layer_cnt];
 		node_num = new int[layer_cnt];
 		weight = new bigint**[layer_cnt - 1];
 		//레이어 별 노드 수
 		for (int i = 0; i < layer_cnt; i++) {
-			cin >> node_num[i];
+			file_input >> node_num[i];
 			layers[i] = new bigint[node_num[i]];
 		}
 
@@ -85,7 +80,7 @@ void BigIntNerualNet::InitNN() {
 		//레이어별 weight
 		for (int layer = 0; layer < layer_cnt - 1; layer++) {
 			int fixed_weight;
-			cin >> fixed_weight;
+			file_input >> fixed_weight;
 			for (int i = 0; i < node_num[layer]; i++) {
 				for (int j = 0; j < node_num[layer + 1]; j++) {
 					weight[layer][i][j] = fixed_weight;
@@ -94,7 +89,7 @@ void BigIntNerualNet::InitNN() {
 		}
 		//input 레이어의 노드 입력
 		for (int i = 0; i < node_num[0]; i++) {
-			cin >> this->layers[0][i];
+			file_input >> this->layers[0][i];
 		}
 	}
 	else {

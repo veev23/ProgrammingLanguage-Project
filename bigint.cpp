@@ -25,6 +25,7 @@ void bigint::set_number(int num) {
 	else {
 		this->len = iter;
 		this->sign = 1;
+		delete[] digit;
 		this->digit = new int[iter];
 		for (int i = 0; i < iter; i++) {
 			digit[i] = arr[i];
@@ -52,6 +53,7 @@ bigint::bigint(int* arr, int sz) {
 	}
 }
 bigint::bigint(int num) {
+	this->digit = new int[0];
 	this->set_number(num);
 };
 bigint::bigint(const bigint& tmp) {
